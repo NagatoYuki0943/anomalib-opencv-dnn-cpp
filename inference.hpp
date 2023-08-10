@@ -25,17 +25,9 @@ public:
         // 1.读取meta
         this->meta = getJson(meta_path);
         // 2.创建模型
-        this->get_model(model_path);
+        this->model = cv::dnn::readNetFromONNX(model_path);
         // 4.模型预热
         this->warm_up();
-    }
-
-    /**
-     * get onnx model
-     * @param model_path    模型路径
-     */
-    void get_model(string& model_path) {
-        this->model = cv::dnn::readNetFromONNX(model_path);
     }
 
     /**
