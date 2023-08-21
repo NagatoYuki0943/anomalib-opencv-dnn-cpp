@@ -68,7 +68,7 @@ public:
         float score = post_mat[1].at<float>(0, 0);
 
         // 6.返回结果
-         return Result{ anomaly_map, score };
+        return Result{ anomaly_map, score };
     }
 
     /**
