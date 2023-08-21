@@ -52,7 +52,7 @@ public:
         this->meta.image_size[1] = image.size().width;
 
         // 2.图片预处理
-        cv::Mat resized_image = pre_process(image, meta);
+        cv::Mat resized_image = pre_process(image, this->meta);
         cv::Mat blob = cv::dnn::blobFromImage(resized_image);
 
         // 4.推理
