@@ -13,6 +13,7 @@ using namespace std;
 
 class Inference {
 private:
+    bool efficient_ad;  // 是否使用efficient_ad模型
     MetaData meta{};    // 超参数
     cv::dnn::Net model; // model
 
@@ -21,7 +22,8 @@ public:
      * @param model_path    模型路径
      * @param meta_path     超参数路径
      */
-    Inference(string& model_path, string& meta_path) {
+    Inference(string& model_path, string& meta_path, bool efficient_ad = false) {
+        this->efficient_ad = efficient_ad;
         // 1.读取meta
         this->meta = getJson(meta_path);
         // 2.创建模型
@@ -52,12 +54,18 @@ public:
         this->meta.image_size[1] = image.size().width;
 
         // 2.图片预处理
-        cv::Mat resized_image = pre_process(image, this->meta);
+        cv::Mat resized_image = pre_process(image, this->meta, this->efficient_ad);
+        // hwc2nchw
         cv::Mat blob = cv::dnn::blobFromImage(resized_image);
 
         // 4.推理
         this->model.setInput(blob);
-        cv::Mat anomaly_map = this->model.forward();
+        cv::Mat output = this->model.forward("output");
+        // nchw2hwc
+        std::vector<cv::Mat> outputs;
+        cv::dnn::imagesFromBlob(output, outputs);
+        cv::Mat anomaly_map = outputs[0];
+        
         double _, maxValue;    // 最大值，最小值
         cv::minMaxLoc(anomaly_map, &_, &maxValue);
         cv::Mat pred_score = cv::Mat(cv::Size(1, 1), CV_32FC1, maxValue);
