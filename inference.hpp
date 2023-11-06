@@ -60,12 +60,12 @@ public:
 
         // 4.推理
         this->model.setInput(blob);
-        cv::Mat output = this->model.forward("output");
+        cv::Mat output = this->model.forward();
         // nchw2hwc
         std::vector<cv::Mat> outputs;
         cv::dnn::imagesFromBlob(output, outputs);
         cv::Mat anomaly_map = outputs[0];
-        
+
         double _, maxValue;    // 最大值，最小值
         cv::minMaxLoc(anomaly_map, &_, &maxValue);
         cv::Mat pred_score = cv::Mat(cv::Size(1, 1), CV_32FC1, maxValue);
